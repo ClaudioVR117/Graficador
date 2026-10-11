@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resolutor de Programación Lineal - 2 Variables</title>
+    <style>
+        :root {
+            --azul-principal: #4a90e2;
+            --azul-oscuro: #2c6cb0;
+            --azul-claro: #e8f4fd;
+            --azul-muy-claro: #f5faff;
+            --azul-suave: #d0e6f8;
+            --texto: #1e3a5f;
+            --texto-secundario: #4a6fa5;
+            --blanco: #ffffff;
+            --sombra: 0 4px 20px rgba(74, 144, 226, 0.15);
+            --sombra-suave: 0 2px 10px rgba(74, 144, 226, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            display: flex;
+            height: 100vh;
+            background: linear-gradient(135deg, #e8f4fd 0%, #f0f7ff 50%, #e3f0fb 100%);
+            color: var(--texto);
+        }
+
+        #panel-izquierdo {
+            width: 400px;
+            background: var(--blanco);
+            padding: 24px;
+            overflow-y: auto;
+            box-shadow: 4px 0 25px rgba(74, 144, 226, 0.12);
+            border-right: 1px solid var(--azul-suave);
+        }
+
+        h1 {
+            font-size: 1.35rem;
+            margin-bottom: 8px;
+            color: var(--azul-oscuro);
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+
+        .subtitulo {
+            font-size: 0.85rem;
+            color: var(--texto-secundario);
+            margin-bottom: 18px;
+        }
+
+        h2 {
+            font-size: 0.95rem;
+            margin: 18px 0 10px;
+            color: var(--azul-oscuro);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        h2::before {
+            content: '';
+            width: 4px;
+            height: 16px;
+            background: var(--azul-principal);
+            border-radius: 2px;
+        }
+
+        label {
+            display: block;
+            margin: 6px 0 4px;
+            font-weight: 600;
+            font-size: 0.82rem;
+            color: var(--texto-secundario);
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 9px 12px;
+            margin-bottom: 6px;
+            border: 1.5px solid #c5d9ed;
+            border-radius: 8px;
+            font-size: 0.92rem;
+            background: var(--azul-muy-claro);
+            color: var(--texto);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--azul-principal);
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+            background: var(--blanco);
+        }
+
+        button {
+            width: 100%;
+            padding: 11px;
+            background: var(--azul-principal);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+            box-shadow: 0 2px 8px rgba(74, 144, 226, 0.3);
+        }
+
+        button:hover {
+            background: var(--azul-oscuro);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .botones-problemas {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 6px;
+        }
+
+        .botones-problemas button {
+            flex: 1;
+            margin-top: 0;
+            font-size: 0.88rem;
+            padding: 10px 8px;
+        }
+
+        #btnProblema1 {
+            background: linear-gradient(135deg, #5dade2, #4a90e2);
+        }
+
+        #btnProblema1:hover {
+            background: linear-gradient(135deg, #4a90e2, #2c6cb0);
+        }
+
+        #btnProblema2 {
+            background: linear-gradient(135deg, #48c9b0, #1abc9c);
+        }
+
+        #btnProblema2:hover {
+            background: linear-gradient(135deg, #1abc9c, #16a085);
+        }
+
+        #btnAgregar {
+            background: #5dade2;
+            box-shadow: 0 2px 8px rgba(93, 173, 226, 0.3);
+        }
+
+        #btnAgregar:hover {
+            background: #3498db;
+        }
+
+        .restriccion-row {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+            margin-bottom: 8px;
+            background: var(--azul-muy-claro);
+            padding: 8px;
+            border-radius: 8px;
+            border: 1px solid var(--azul-suave);
+        }
+
+        .restriccion-row input {
+            margin-bottom: 0;
+            padding: 7px 6px;
+        }
+
+        .restriccion-row input[type="number"] {
+            width: 58px;
+        }
+
+        .restriccion-row select {
+            width: 58px;
+            margin-bottom: 0;
+            padding: 7px 4px;
+        }
+
+        .restriccion-row span {
+            font-size: 0.85rem;
+            color: var(--texto-secundario);
+            font-weight: 500;
+        }
+
+        .btn-eliminar {
+            background: #e74c3c;
+            width: auto;
+            padding: 6px 10px;
+            font-size: 0.8rem;
+            margin-top: 0;
+            box-shadow: none;
+        }
+
+        .btn-eliminar:hover {
+            background: #c0392b;
+        }
+
+        #resultado {
+            margin-top: 18px;
+            padding: 14px 16px;
+            background: var(--azul-claro);
+            border-radius: 10px;
+            font-size: 0.88rem;
+            line-height: 1.55;
+            display: none;
+            border: 1px solid var(--azul-suave);
+            box-shadow: var(--sombra-suave);
+        }
+
+        #resultado strong {
+            color: var(--azul-oscuro);
+        }
+
+        #panel-derecho {
+            flex: 1;
+            padding: 20px 24px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #panel-derecho h2 {
+            margin-top: 0;
+            margin-bottom: 12px;
+        }
+
+        #panel-derecho h2::before {
+            display: none;
+        }
+
+        #canvas-container {
+            flex: 1;
+            background: var(--blanco);
+            border-radius: 12px;
+            box-shadow: var(--sombra);
+            position: relative;
+            border: 1px solid var(--azul-suave);
+            overflow: hidden;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        #panel-izquierdo::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #panel-izquierdo::-webkit-scrollbar-track {
+            background: var(--azul-muy-claro);
+        }
+
+        #panel-izquierdo::-webkit-scrollbar-thumb {
+            background: var(--azul-suave);
+            border-radius: 3px;
+        }
+
+        #panel-izquierdo::-webkit-scrollbar-thumb:hover {
+            background: var(--azul-principal);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="panel-izquierdo">
+        <h1>Programación Lineal</h1>
+        <p class="subtitulo">Método gráfico · Variables X e Y</p>
+
+        <div class="botones-problemas">
+            <button type="button" id="btnProblema1">Problema 1 - Pinturas</button>
+            <button type="button" id="btnProblema2">Problema 2 - Alimento</button>
+        </div>
+
+        <h2>1. Tipo de problema</h2>
+        <label>Objetivo</label>
+        <select id="tipo">
+            <option value="max">Maximizar</option>
+            <option value="min">Minimizar</option>
+        </select>
+
+        <h2>2. Función Objetivo</h2>
+        <label>Z =</label>
+        <div class="restriccion-row">
+            <input type="number" id="coefX" placeholder="Coef. X" value="5" step="any" style="width: 70px;">
+            <span>X</span>
+            <span>+</span>
+            <input type="number" id="coefY" placeholder="Coef. Y" value="4" step="any" style="width: 70px;">
+            <span>Y</span>
+        </div>
+
+        <h2>3. Restricciones</h2>
+        <div id="restricciones-container"></div>
+        <button type="button" id="btnAgregar">+ Agregar restricción</button>
+
+        <button id="btnResolver">Resolver problema</button>
+
+        <div id="resultado"></div>
+    </div>
+
+    <div id="panel-derecho">
+        <h2 style="color:var(--azul-oscuro); font-size:1.15rem;">Gráfica y Región Factible</h2>
+        <div id="canvas-container">
+            <canvas id="grafica"></canvas>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
